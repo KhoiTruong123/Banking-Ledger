@@ -3,6 +3,7 @@ import { ref } from 'vue'
 import { useRoute } from 'vue-router'
 import { useAccountsStore } from '@/stores/accounts'
 import AppIcon from '@/components/common/AppIcon.vue'
+import DarkModeToggle from '@/components/common/DarkModeToggle.vue'
 
 const accountsStore = useAccountsStore()
 const route = useRoute()
@@ -30,15 +31,19 @@ function isActive(path) {
         <span v-if="accountsStore.customer" class="text-xs text-white/55">{{ accountsStore.customer.name }}</span>
       </div>
 
-      <button
-        type="button"
-        class="flex h-9 w-9 shrink-0 items-center justify-center rounded-lg text-white/80 hover:bg-white/10 md:hidden"
-        :aria-expanded="mobileMenuOpen"
-        aria-label="Toggle menu"
-        @click="mobileMenuOpen = !mobileMenuOpen"
-      >
-        <AppIcon :name="mobileMenuOpen ? 'x-mark' : 'menu'" class="h-5 w-5" />
-      </button>
+      <div class="flex items-center gap-1 md:self-end">
+        <DarkModeToggle />
+
+        <button
+          type="button"
+          class="flex h-9 w-9 shrink-0 items-center justify-center rounded-lg text-white/80 hover:bg-white/10 md:hidden"
+          :aria-expanded="mobileMenuOpen"
+          aria-label="Toggle menu"
+          @click="mobileMenuOpen = !mobileMenuOpen"
+        >
+          <AppIcon :name="mobileMenuOpen ? 'x-mark' : 'menu'" class="h-5 w-5" />
+        </button>
+      </div>
     </div>
 
     <nav

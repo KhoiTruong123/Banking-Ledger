@@ -3,8 +3,30 @@
 @tailwind utilities;
 
 @layer base {
+  :root {
+    --color-paper: 248 250 252;
+    --color-surface: 255 255 255;
+    --color-ink: 15 23 42;
+    --color-ink-soft: 51 65 85;
+    --color-dim: 71 85 105;
+    --color-muted: 148 163 184;
+    --color-line: 226 232 240;
+    --color-line-strong: 203 213 225;
+  }
+
+  .dark {
+    --color-paper: 13 18 32;
+    --color-surface: 24 31 51;
+    --color-ink: 241 245 249;
+    --color-ink-soft: 226 232 240;
+    --color-dim: 148 163 184;
+    --color-muted: 100 116 139;
+    --color-line: 51 65 85;
+    --color-line-strong: 71 85 105;
+  }
+
   body {
-    @apply bg-paper font-body text-[15px] leading-normal text-ink antialiased;
+    @apply bg-paper font-body text-[15px] leading-normal text-ink antialiased transition-colors duration-200;
   }
 
   h1,

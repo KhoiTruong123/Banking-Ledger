@@ -61,7 +61,6 @@ function goToTransactions(accountId) {
           <p class="max-w-sm text-sm text-white/80">
             Open a new High-Yield Savings account and earn up to 4.50% APY. Start growing your wealth today.
           </p>
-          <button class="btn mt-2 self-start bg-teal text-ink hover:bg-teal-dark hover:text-white">Apply Now</button>
         </div>
 
         <div class="card flex flex-col gap-3 p-5">

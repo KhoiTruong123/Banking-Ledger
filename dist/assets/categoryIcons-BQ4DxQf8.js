@@ -1,0 +1,1 @@
+const t={Groceries:"shopping-bag",Dining:"cup",Transport:"truck",Utilities:"bolt",Shopping:"shopping-bag",Entertainment:"film",Health:"heart",Income:"banknotes",Transfer:"arrows-right-left",Fees:"receipt"};function n(e){return t[e]??"receipt"}export{n as c};

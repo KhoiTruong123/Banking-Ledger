@@ -1,0 +1,66 @@
+@tailwind base;
+@tailwind components;
+@tailwind utilities;
+
+@layer base {
+  body {
+    @apply bg-paper font-body text-[15px] leading-normal text-ink antialiased;
+  }
+
+  h1,
+  h2,
+  h3,
+  h4 {
+    @apply m-0 font-display font-semibold tracking-[-0.01em];
+  }
+}
+
+@layer components {
+  .btn {
+    @apply inline-flex items-center justify-center gap-1.5 rounded-lg border border-transparent px-[18px] py-2.5 font-body text-sm font-semibold transition-colors;
+  }
+
+  .btn-primary {
+    @apply bg-primary text-white hover:bg-primary-dark disabled:cursor-not-allowed disabled:opacity-50;
+  }
+
+  .btn-secondary {
+    @apply border-line-strong bg-transparent text-ink hover:border-ink;
+  }
+
+  .card {
+    @apply rounded-xl border border-line bg-surface;
+  }
+
+  .input {
+    @apply rounded-lg border border-line-strong bg-surface px-3 py-2.5 font-body text-sm text-ink transition-colors hover:border-primary focus:outline focus:outline-2 focus:outline-offset-1 focus:outline-primary;
+  }
+
+  .status-pill {
+    @apply inline-flex items-center gap-1 rounded-full px-2.5 py-[3px] text-xs font-semibold uppercase tracking-[0.02em];
+  }
+
+  .status-pill.active {
+    @apply bg-teal-wash text-teal-dark;
+  }
+
+  .status-pill.frozen {
+    @apply bg-steel-wash text-steel;
+  }
+
+  .status-pill.closed {
+    @apply bg-brick-wash text-brick;
+  }
+
+  .ledger-num {
+    @apply font-ledger tabular-nums;
+  }
+
+  .amount-credit {
+    @apply text-success;
+  }
+
+  .amount-debit {
+    @apply text-brick;
+  }
+}

@@ -44,7 +44,7 @@ function goToTransactions(accountId: string) {
     <p v-else-if="accountsStore.status === 'error'" class="text-sm text-brick">{{ accountsStore.error }}</p>
 
     <template v-else>
-      <div class="grid grid-cols-2 gap-4">
+      <div class="grid grid-cols-1 lg:grid-cols-2 gap-4">
         <AccountCard
           v-for="account in accountsStore.accounts"
           :key="account.id"

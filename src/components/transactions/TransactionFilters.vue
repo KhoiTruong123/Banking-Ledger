@@ -24,7 +24,7 @@ function update(field: keyof TransactionFilters, value: string) {
 </script>
 
 <template>
-  <div class="card grid grid-cols-1 gap-3 p-4 sm:grid-cols-2 md:grid-cols-4">
+  <div class="card grid grid-cols-1 gap-3 p-4 sm:grid-cols-2 lg:grid-cols-4">
     <label class="flex flex-col gap-1.5">
       <span class="text-xs font-medium text-ink">Search Merchants or Description</span>
       <span class="relative">
@@ -108,7 +108,7 @@ function update(field: keyof TransactionFilters, value: string) {
     </label>
 
     <div class="flex items-end">
-      <button type="button" class="btn btn-primary text-sm" @click="emit('reset')">
+      <button type="button" class="btn btn-primary w-full whitespace-nowrap text-sm" @click="emit('reset')">
         <AppIcon name="refresh" class="h-4 w-4" />
         Reset Filters
       </button>

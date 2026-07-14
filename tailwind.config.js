@@ -6,6 +6,7 @@ export default {
     extend: {
       colors: {
         primary: { DEFAULT: '#7c5cff', dark: '#6947e3', wash: '#eee9ff' },
+        sidebar: { DEFAULT: '#0f172a', dark: '#241a3d' },
         ink: {
           DEFAULT: 'rgb(var(--color-ink) / <alpha-value>)',
           soft: 'rgb(var(--color-ink-soft) / <alpha-value>)'

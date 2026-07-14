@@ -1,6 +1,26 @@
+import type { Account, AccountStatus, AccountType, Category, Customer, Transaction } from '@/types'
+
+interface TransactionSpec {
+  daysAgo: number
+  amount: number
+  category: Category
+  merchant: string
+  description: string
+  transferGroupId?: string
+}
+
+interface AccountDef {
+  id: string
+  accountNumber: string
+  nickname: string
+  type: AccountType
+  status: AccountStatus
+  targetBalance: number
+}
+
 // Deterministic pseudo-random generator so the demo data is stable across reloads
 // (still regenerates relative to "today" so the app always feels current).
-function mulberry32(seed) {
+function mulberry32(seed: number) {
   return function () {
     seed |= 0
     seed = (seed + 0x6d2b79f5) | 0
@@ -12,26 +32,26 @@ function mulberry32(seed) {
 
 const rand = mulberry32(20260709)
 
-function randomInt(min, max) {
+function randomInt(min: number, max: number): number {
   return Math.floor(rand() * (max - min + 1)) + min
 }
 
-function randomAmount(min, max) {
+function randomAmount(min: number, max: number): number {
   return Math.round((rand() * (max - min) + min) * 100) / 100
 }
 
-function pick(list) {
+function pick<T>(list: T[]): T {
   return list[Math.floor(rand() * list.length)]
 }
 
-function isoDaysAgo(days) {
+function isoDaysAgo(days: number): string {
   const d = new Date()
   d.setDate(d.getDate() - days)
   d.setHours(randomInt(7, 20), randomInt(0, 59), 0, 0)
   return d.toISOString()
 }
 
-const EXPENSE_CATALOG = [
+const EXPENSE_CATALOG: { category: Category; merchants: string[]; min: number; max: number }[] = [
   { category: 'Groceries', merchants: ["Trader Joe's", 'Whole Foods Market', 'Safeway'], min: 18, max: 130 },
   { category: 'Dining', merchants: ['Blue Bottle Coffee', 'Chipotle', 'The Local Bistro', 'Corner Deli'], min: 6, max: 68 },
   { category: 'Transport', merchants: ['Uber', 'Shell Gas Station', 'Metro Transit'], min: 8, max: 72 },
@@ -42,7 +62,7 @@ const EXPENSE_CATALOG = [
 ]
 
 let txnCounter = 0
-function nextId() {
+function nextId(): string {
   txnCounter += 1
   return `txn-${String(txnCounter).padStart(4, '0')}`
 }
@@ -50,7 +70,7 @@ function nextId() {
 // Builds the posted-transaction spec list for an account, then walks it
 // chronologically so every entry gets a correct running `balanceAfter`,
 // ending exactly at `targetBalance`.
-function buildLedger(accountId, targetBalance, specs) {
+function buildLedger(accountId: string, targetBalance: number, specs: TransactionSpec[]): Transaction[] {
   const sorted = [...specs].sort((a, b) => b.daysAgo - a.daysAgo) // oldest first
   const total = sorted.reduce((sum, s) => sum + s.amount, 0)
   let running = targetBalance - total
@@ -64,7 +84,7 @@ function buildLedger(accountId, targetBalance, specs) {
       merchant: s.merchant,
       category: s.category,
       amount: s.amount,
-      status: 'posted',
+      status: 'posted' as const,
       balanceAfter: running,
       transferGroupId: s.transferGroupId ?? null
     }
@@ -72,7 +92,7 @@ function buildLedger(accountId, targetBalance, specs) {
   return transactions
 }
 
-function buildPending(accountId, specs) {
+function buildPending(accountId: string, specs: TransactionSpec[]): Transaction[] {
   return specs.map((s) => ({
     id: nextId(),
     accountId,
@@ -81,14 +101,14 @@ function buildPending(accountId, specs) {
     merchant: s.merchant,
     category: s.category,
     amount: s.amount,
-    status: 'pending',
+    status: 'pending' as const,
     balanceAfter: null,
     transferGroupId: null
   }))
 }
 
-function checkingSpecs() {
-  const specs = []
+function checkingSpecs(): TransactionSpec[] {
+  const specs: TransactionSpec[] = []
   for (let i = 0; i < 7; i += 1) {
     specs.push({
       daysAgo: 3 + i * 14,
@@ -133,8 +153,8 @@ function checkingSpecs() {
   return specs
 }
 
-function savingsSpecs() {
-  const specs = []
+function savingsSpecs(): TransactionSpec[] {
+  const specs: TransactionSpec[] = []
   ;[5, 35, 65].forEach((daysAgo) => {
     specs.push({
       daysAgo,
@@ -155,8 +175,8 @@ function savingsSpecs() {
   return specs
 }
 
-function travelSpecs() {
-  const specs = [
+function travelSpecs(): TransactionSpec[] {
+  const specs: TransactionSpec[] = [
     {
       daysAgo: 48,
       amount: 150,
@@ -178,7 +198,7 @@ function travelSpecs() {
   return specs
 }
 
-function legacySpecs() {
+function legacySpecs(): TransactionSpec[] {
   return [
     {
       daysAgo: 410,
@@ -197,23 +217,29 @@ function legacySpecs() {
   ]
 }
 
-export function generateSeedData() {
+export interface SeedData {
+  customer: Customer
+  accounts: Account[]
+  transactions: Transaction[]
+}
+
+export function generateSeedData(): SeedData {
   txnCounter = 0
 
-  const customer = {
+  const customer: Customer = {
     id: 'cust-001',
     name: 'Jordan Lee',
     email: 'jordan.lee@example.com'
   }
 
-  const accountDefs = [
+  const accountDefs: AccountDef[] = [
     { id: 'acc-checking', accountNumber: '4471820156', nickname: 'Primary Checking', type: 'checking', status: 'active', targetBalance: 4250.75 },
     { id: 'acc-savings', accountNumber: '5583910442', nickname: 'High-Yield Savings', type: 'savings', status: 'active', targetBalance: 12800.0 },
     { id: 'acc-travel', accountNumber: '5583910775', nickname: 'Travel Fund', type: 'savings', status: 'active', targetBalance: 1200.5 },
     { id: 'acc-legacy', accountNumber: '3390004411', nickname: 'Legacy Checking', type: 'checking', status: 'frozen', targetBalance: 300.0 }
   ]
 
-  const transactions = []
+  const transactions: Transaction[] = []
 
   transactions.push(...buildLedger('acc-checking', 4250.75, checkingSpecs()))
   transactions.push(...buildLedger('acc-savings', 12800.0, savingsSpecs()))
@@ -226,7 +252,7 @@ export function generateSeedData() {
   ])
   transactions.push(...pending)
 
-  const accounts = accountDefs.map((def) => {
+  const accounts: Account[] = accountDefs.map((def) => {
     const pendingHoldsTotal = pending
       .filter((p) => p.accountId === def.id && p.amount < 0)
       .reduce((sum, p) => sum + Math.abs(p.amount), 0)
@@ -239,7 +265,7 @@ export function generateSeedData() {
     }
   })
 
-  transactions.sort((a, b) => new Date(b.date) - new Date(a.date))
+  transactions.sort((a, b) => new Date(b.date).getTime() - new Date(a.date).getTime())
 
   return { customer, accounts, transactions }
 }

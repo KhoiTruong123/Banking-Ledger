@@ -9,4 +9,4 @@ export const CATEGORIES = [
   'Income',
   'Transfer',
   'Fees'
-]
+] as const

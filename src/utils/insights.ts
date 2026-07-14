@@ -1,9 +1,11 @@
-function monthKey(dateStr) {
+import type { CategoryTotal, MerchantTotal, MonthlyFlow, Transaction } from '@/types'
+
+function monthKey(dateStr: string): string {
   const d = new Date(dateStr)
   return `${d.getFullYear()}-${String(d.getMonth() + 1).padStart(2, '0')}`
 }
 
-function postedOnly(transactions) {
+function postedOnly(transactions: Transaction[]): Transaction[] {
   return transactions.filter((t) => t.status === 'posted')
 }
 
@@ -11,8 +13,8 @@ function postedOnly(transactions) {
  * Groups expense transactions (negative amounts, excluding internal
  * transfers) by category and returns them sorted largest-first.
  */
-export function spendingByCategory(transactions) {
-  const totals = new Map()
+export function spendingByCategory(transactions: Transaction[]): CategoryTotal[] {
+  const totals = new Map<Transaction['category'], number>()
   for (const t of postedOnly(transactions)) {
     if (t.amount >= 0 || t.category === 'Transfer') continue
     totals.set(t.category, (totals.get(t.category) ?? 0) + Math.abs(t.amount))
@@ -31,13 +33,13 @@ export function spendingByCategory(transactions) {
  * Income vs. expense per month, oldest to newest, for the last `months`
  * distinct calendar months present in the data.
  */
-export function incomeVsExpense(transactions, months = 6) {
-  const byMonth = new Map()
+export function incomeVsExpense(transactions: Transaction[], months = 6): MonthlyFlow[] {
+  const byMonth = new Map<string, MonthlyFlow>()
   for (const t of postedOnly(transactions)) {
     if (t.category === 'Transfer') continue
     const key = monthKey(t.date)
-    if (!byMonth.has(key)) byMonth.set(key, { month: key, income: 0, expense: 0 })
-    const bucket = byMonth.get(key)
+    if (!byMonth.has(key)) byMonth.set(key, { month: key, income: 0, expense: 0, net: 0 })
+    const bucket = byMonth.get(key)!
     if (t.amount > 0) bucket.income += t.amount
     else bucket.expense += Math.abs(t.amount)
   }
@@ -55,12 +57,12 @@ export function incomeVsExpense(transactions, months = 6) {
 /**
  * Largest merchants by total spend (expenses only, transfers excluded).
  */
-export function topMerchants(transactions, limit = 5) {
-  const totals = new Map()
+export function topMerchants(transactions: Transaction[], limit = 5): MerchantTotal[] {
+  const totals = new Map<string, MerchantTotal>()
   for (const t of postedOnly(transactions)) {
     if (t.amount >= 0 || t.category === 'Transfer') continue
     if (!totals.has(t.merchant)) totals.set(t.merchant, { merchant: t.merchant, category: t.category, total: 0, count: 0 })
-    const bucket = totals.get(t.merchant)
+    const bucket = totals.get(t.merchant)!
     bucket.total += Math.abs(t.amount)
     bucket.count += 1
   }

@@ -1,4 +1,4 @@
-<script setup>
+<script setup lang="ts">
 import { onUnmounted } from 'vue'
 import { useTransferStore } from '@/stores/transfer'
 import TransferForm from '@/components/transfer/TransferForm.vue'
@@ -15,7 +15,7 @@ onUnmounted(() => {
 <template>
   <div class="flex max-w-5xl flex-col gap-6">
     <header>
-      <h1 class="text-[32px] font-bold text-primary">Transfer Money</h1>
+      <h1 class="text-[32px] font-bold">Transfer Money</h1>
       <p class="mt-1.5 text-sm text-dim">Move funds instantly between your accounts or to a saved contact.</p>
     </header>
 

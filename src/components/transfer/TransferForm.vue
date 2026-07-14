@@ -1,4 +1,4 @@
-<script setup>
+<script setup lang="ts">
 import { computed, reactive, ref, watch } from 'vue'
 import { useAccountsStore } from '@/stores/accounts'
 import { useTransferStore } from '@/stores/transfer'
@@ -21,7 +21,7 @@ const amountDisplay = ref('')
 
 // Keeps the visible field grouped with thousands separators (e.g. 222,222.50)
 // while `form.amount` stays a plain numeric string for validation/submit.
-function formatAmountInput(raw) {
+function formatAmountInput(raw: string): string {
   let cleaned = raw.replace(/[^\d.]/g, '')
   const firstDot = cleaned.indexOf('.')
   if (firstDot !== -1) {
@@ -32,8 +32,8 @@ function formatAmountInput(raw) {
   return decPart !== undefined ? `${groupedInt}.${decPart}` : groupedInt
 }
 
-function onAmountInput(event) {
-  const formatted = formatAmountInput(event.target.value)
+function onAmountInput(event: Event) {
+  const formatted = formatAmountInput((event.target as HTMLInputElement).value)
   amountDisplay.value = formatted
   form.amount = formatted.replace(/,/g, '')
 }

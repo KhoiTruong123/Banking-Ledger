@@ -1,4 +1,4 @@
-<script setup>
+<script setup lang="ts">
 import { ref } from 'vue'
 import { useRoute } from 'vue-router'
 import { useAccountsStore } from '@/stores/accounts'
@@ -9,20 +9,20 @@ const accountsStore = useAccountsStore()
 const route = useRoute()
 const mobileMenuOpen = ref(false)
 
-const navItems = [
+const navItems: { to: string; label: string; icon: string }[] = [
   { to: '/accounts', label: 'Accounts', icon: 'squares' },
   { to: '/transactions', label: 'Transactions', icon: 'document-text' },
   { to: '/transfer', label: 'Transfer', icon: 'arrows-right-left' },
   { to: '/insights', label: 'Insights', icon: 'trending-up' }
 ]
 
-function isActive(path) {
+function isActive(path: string): boolean {
   return route.path.startsWith(path)
 }
 </script>
 
 <template>
-  <aside class="w-full shrink-0 bg-ink text-white/90 md:flex md:w-60 md:flex-col md:overflow-visible md:py-7">
+  <aside class="w-full shrink-0 bg-sidebar text-white/90 dark:bg-sidebar-dark md:flex md:w-60 md:flex-col md:overflow-visible md:py-7">
     <div
       class="flex items-center justify-between px-4 py-3 md:flex-col md:items-stretch md:gap-0.5 md:border-b md:border-white/10 md:px-6 md:py-0 md:pb-6"
     >
@@ -31,23 +31,19 @@ function isActive(path) {
         <span v-if="accountsStore.customer" class="text-xs text-white/55">{{ accountsStore.customer.name }}</span>
       </div>
 
-      <div class="flex items-center gap-1 md:self-end">
-        <DarkModeToggle />
-
-        <button
-          type="button"
-          class="flex h-9 w-9 shrink-0 items-center justify-center rounded-lg text-white/80 hover:bg-white/10 md:hidden"
-          :aria-expanded="mobileMenuOpen"
-          aria-label="Toggle menu"
-          @click="mobileMenuOpen = !mobileMenuOpen"
-        >
-          <AppIcon :name="mobileMenuOpen ? 'x-mark' : 'menu'" class="h-5 w-5" />
-        </button>
-      </div>
+      <button
+        type="button"
+        class="flex h-9 w-9 shrink-0 items-center justify-center rounded-lg text-white/80 hover:bg-white/10 md:hidden"
+        :aria-expanded="mobileMenuOpen"
+        aria-label="Toggle menu"
+        @click="mobileMenuOpen = !mobileMenuOpen"
+      >
+        <AppIcon :name="mobileMenuOpen ? 'x-mark' : 'menu'" class="h-5 w-5" />
+      </button>
     </div>
 
     <nav
-      class="flex-col gap-0.5 px-2 pb-3 md:flex md:flex-1 md:px-3 md:py-2 md:pb-2"
+      class="flex-col gap-0.5 px-2 pb-3 md:flex md:px-3 md:py-2 md:pb-2"
       :class="mobileMenuOpen ? 'flex' : 'hidden'"
     >
       <router-link
@@ -77,5 +73,9 @@ function isActive(path) {
         Transfer Money
       </router-link>
     </div>
+
+    <div class="hidden md:block md:flex-1"></div>
+
+    <DarkModeToggle />
   </aside>
 </template>

@@ -1,4 +1,4 @@
-<script setup>
+<script setup lang="ts">
 import { computed, onMounted, watch } from 'vue'
 import { useRoute, useRouter } from 'vue-router'
 import { useAccountsStore } from '@/stores/accounts'
@@ -8,17 +8,18 @@ import TransactionRow from '@/components/transactions/TransactionRow.vue'
 import TransactionDetail from '@/components/transactions/TransactionDetail.vue'
 import AppIcon from '@/components/common/AppIcon.vue'
 import { exportTransactionsToCsv } from '@/utils/csv'
+import type { TransactionFilters as TransactionFiltersType } from '@/types'
 
 const route = useRoute()
 const router = useRouter()
 const accountsStore = useAccountsStore()
 const transactionsStore = useTransactionsStore()
 
-let searchDebounce = null
+let searchDebounce: ReturnType<typeof setTimeout> | undefined
 
 onMounted(() => {
   transactionsStore.fetch({
-    accountId: route.query.accountId ?? '',
+    accountId: String(route.query.accountId ?? ''),
     category: '',
     search: '',
     status: '',
@@ -31,12 +32,12 @@ watch(
   () => route.query.accountId,
   (accountId) => {
     if (accountId !== undefined && accountId !== transactionsStore.filters.accountId) {
-      transactionsStore.fetch({ accountId: accountId ?? '' })
+      transactionsStore.fetch({ accountId: String(accountId ?? '') })
     }
   }
 )
 
-function onFiltersUpdate(next) {
+function onFiltersUpdate(next: TransactionFiltersType) {
   const searchChanged = next.search !== transactionsStore.filters.search
   if (next.accountId !== route.query.accountId) {
     router.replace({ query: next.accountId ? { accountId: next.accountId } : {} })
@@ -56,7 +57,7 @@ function resetFilters() {
 }
 
 const accountNameById = computed(() => {
-  const map = {}
+  const map: Record<string, string> = {}
   for (const account of accountsStore.accounts) map[account.id] = account.nickname
   return map
 })

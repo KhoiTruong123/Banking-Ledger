@@ -1,26 +1,22 @@
 import { mockDatabase } from './mockDatabase'
+import type { Transaction, TransactionFilters } from '@/types'
 
 const NETWORK_DELAY_MS = 350
 
-function delay(ms = NETWORK_DELAY_MS) {
+function delay(ms = NETWORK_DELAY_MS): Promise<void> {
   return new Promise((resolve) => setTimeout(resolve, ms))
 }
 
-function clone(value) {
+function clone<T>(value: T): T {
   return JSON.parse(JSON.stringify(value))
 }
 
 export const transactionService = {
   /**
-   * @param {object} [filters]
-   * @param {string} [filters.accountId]
-   * @param {string} [filters.category]
-   * @param {string} [filters.search] free-text match against description/merchant
-   * @param {string} [filters.status] 'posted' | 'pending'
-   * @param {string} [filters.dateFrom] 'YYYY-MM-DD', inclusive
-   * @param {string} [filters.dateTo] 'YYYY-MM-DD', inclusive
+   * @param filters.dateFrom 'YYYY-MM-DD', inclusive
+   * @param filters.dateTo 'YYYY-MM-DD', inclusive
    */
-  async getTransactions(filters = {}) {
+  async getTransactions(filters: Partial<TransactionFilters> = {}): Promise<Transaction[]> {
     await delay()
     let results = clone(mockDatabase.getTransactions())
 
@@ -40,7 +36,7 @@ export const transactionService = {
       )
     }
     if (filters.dateFrom) {
-      results = results.filter((t) => t.date >= filters.dateFrom)
+      results = results.filter((t) => t.date >= filters.dateFrom!)
     }
     if (filters.dateTo) {
       results = results.filter((t) => t.date <= `${filters.dateTo}T23:59:59.999Z`)
@@ -49,7 +45,7 @@ export const transactionService = {
     return results
   },
 
-  async getTransactionById(transactionId) {
+  async getTransactionById(transactionId: string): Promise<Transaction> {
     await delay(200)
     const transaction = mockDatabase.getTransactions().find((t) => t.id === transactionId)
     if (!transaction) {

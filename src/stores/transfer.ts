@@ -1,19 +1,27 @@
 import { defineStore } from 'pinia'
 import { transferService } from '@/services/transferService'
+import type { TransferInput } from '@/services/transferService'
 import { useAccountsStore } from './accounts'
 import { useTransactionsStore } from './transactions'
 import { useUiStore } from './ui'
 import { formatCurrency } from '@/utils/format'
+import type { TransferResult } from '@/types'
+
+interface TransferState {
+  submitting: boolean
+  error: string | null
+  lastResult: TransferResult | null
+}
 
 export const useTransferStore = defineStore('transfer', {
-  state: () => ({
+  state: (): TransferState => ({
     submitting: false,
     error: null,
     lastResult: null
   }),
 
   actions: {
-    async submit({ fromAccountId, toAccountId, amount, note }) {
+    async submit({ fromAccountId, toAccountId, amount, note }: TransferInput) {
       this.submitting = true
       this.error = null
       this.lastResult = null
@@ -32,8 +40,9 @@ export const useTransferStore = defineStore('transfer', {
         uiStore.pushToast('success', `Transfer of ${formatCurrency(amount)} complete.`)
         return result
       } catch (err) {
-        this.error = err.message
-        uiStore.pushToast('error', err.message)
+        const message = err instanceof Error ? err.message : String(err)
+        this.error = message
+        uiStore.pushToast('error', message)
         throw err
       } finally {
         this.submitting = false

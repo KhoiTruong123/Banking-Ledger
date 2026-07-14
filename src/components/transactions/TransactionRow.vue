@@ -1,15 +1,23 @@
-<script setup>
+<script setup lang="ts">
 import { formatCurrency, formatDate } from '@/utils/format'
 import { categoryIcon } from '@/utils/categoryIcons'
 import { transactionStatusClasses } from '@/utils/statusStyles'
 import AppIcon from '@/components/common/AppIcon.vue'
+import type { Transaction } from '@/types'
 
-const props = defineProps({
-  transaction: { type: Object, required: true },
-  accountName: { type: String, default: '' }
-})
+const props = withDefaults(
+  defineProps<{
+    transaction: Transaction
+    accountName?: string
+  }>(),
+  {
+    accountName: ''
+  }
+)
 
-defineEmits(['select'])
+defineEmits<{
+  select: [transactionId: string]
+}>()
 
 const icon = categoryIcon(props.transaction.category)
 </script>

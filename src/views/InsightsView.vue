@@ -1,16 +1,19 @@
-<script setup>
+<script setup lang="ts">
 import { computed, onMounted, ref } from 'vue'
 import { transactionService } from '@/services/transactionService'
 import { spendingByCategory, incomeVsExpense, topMerchants } from '@/utils/insights'
 import { formatCurrency, formatMonthLabel } from '@/utils/format'
 import { categoryIcon } from '@/utils/categoryIcons'
 import AppIcon from '@/components/common/AppIcon.vue'
+import type { Transaction } from '@/types'
 
-const status = ref('loading')
-const transactions = ref([])
+type Status = 'loading' | 'ready' | 'error'
+
+const status = ref<Status>('loading')
+const transactions = ref<Transaction[]>([])
 const range = ref('30')
 
-const RANGE_OPTIONS = [
+const RANGE_OPTIONS: { value: string; label: string }[] = [
   { value: '30', label: 'Last 30 Days' },
   { value: '90', label: 'Last 90 Days' },
   { value: 'all', label: 'All Time' }

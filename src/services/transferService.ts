@@ -1,28 +1,31 @@
 import { mockDatabase } from './mockDatabase'
+import type { Account, TransferResult } from '@/types'
 
 const NETWORK_DELAY_MS = 600
 
-function delay(ms = NETWORK_DELAY_MS) {
+function delay(ms = NETWORK_DELAY_MS): Promise<void> {
   return new Promise((resolve) => setTimeout(resolve, ms))
 }
 
-function clone(value) {
+function clone<T>(value: T): T {
   return JSON.parse(JSON.stringify(value))
 }
 
-function round2(value) {
+function round2(value: number): number {
   return Math.round(value * 100) / 100
 }
 
 export class TransferError extends Error {
-  constructor(code, message) {
+  code: string
+
+  constructor(code: string, message: string) {
     super(message)
     this.name = 'TransferError'
     this.code = code
   }
 }
 
-function assertTransferable(account, role) {
+function assertTransferable(account: Account | null, role: string): asserts account is Account {
   if (!account) {
     throw new TransferError('ACCOUNT_NOT_FOUND', `${role} account could not be found.`)
   }
@@ -34,13 +37,20 @@ function assertTransferable(account, role) {
   }
 }
 
+export interface TransferInput {
+  fromAccountId: string
+  toAccountId: string
+  amount: number
+  note?: string
+}
+
 /**
  * Promise-based transfer contract. Every validation rule that would matter
  * against a real backend is enforced here, server-side of the UI boundary,
  * so the client never has to be trusted to get it right.
  */
 export const transferService = {
-  async transfer({ fromAccountId, toAccountId, amount, note = '' }) {
+  async transfer({ fromAccountId, toAccountId, amount, note = '' }: TransferInput): Promise<TransferResult> {
     await delay()
 
     if (fromAccountId === toAccountId) {
@@ -67,18 +77,18 @@ export const transferService = {
     const newFromLedger = round2(fromAccount.ledgerBalance - amount)
     const newToLedger = round2(toAccount.ledgerBalance + amount)
 
-    const updatedFromAccount = {
+    const updatedFromAccount: Account = {
       ...fromAccount,
       ledgerBalance: newFromLedger,
       availableBalance: round2(newFromLedger - fromAccount.pendingHoldsTotal)
     }
-    const updatedToAccount = {
+    const updatedToAccount: Account = {
       ...toAccount,
       ledgerBalance: newToLedger,
       availableBalance: round2(newToLedger - toAccount.pendingHoldsTotal)
     }
 
-    const debitTransaction = {
+    const debitTransaction: TransferResult['debitTransaction'] = {
       id: `${transferGroupId}-debit`,
       accountId: fromAccountId,
       date: timestamp,
@@ -91,7 +101,7 @@ export const transferService = {
       transferGroupId
     }
 
-    const creditTransaction = {
+    const creditTransaction: TransferResult['creditTransaction'] = {
       id: `${transferGroupId}-credit`,
       accountId: toAccountId,
       date: timestamp,

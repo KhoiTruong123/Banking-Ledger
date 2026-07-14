@@ -1,4 +1,6 @@
-const CATEGORY_ICONS = {
+import type { Category } from '@/types'
+
+const CATEGORY_ICONS: Record<Category, string> = {
   Groceries: 'shopping-bag',
   Dining: 'cup',
   Transport: 'truck',
@@ -11,6 +13,6 @@ const CATEGORY_ICONS = {
   Fees: 'receipt'
 }
 
-export function categoryIcon(category) {
+export function categoryIcon(category: Category): string {
   return CATEGORY_ICONS[category] ?? 'receipt'
 }

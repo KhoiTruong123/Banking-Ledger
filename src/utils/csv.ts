@@ -1,11 +1,12 @@
 import { formatDate } from '@/utils/format'
+import type { Transaction } from '@/types'
 
-function escapeCsvField(value) {
+function escapeCsvField(value: unknown): string {
   const str = String(value ?? '')
   return /[",\n]/.test(str) ? `"${str.replace(/"/g, '""')}"` : str
 }
 
-export function exportTransactionsToCsv(transactions, filename = 'transactions.csv') {
+export function exportTransactionsToCsv(transactions: Transaction[], filename = 'transactions.csv'): void {
   const header = ['Description', 'Date', 'Merchant', 'Category', 'Status', 'Amount']
   const rows = transactions.map((t) => [
     t.description,

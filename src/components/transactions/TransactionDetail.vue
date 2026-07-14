@@ -1,16 +1,27 @@
-<script setup>
+<script setup lang="ts">
 import { formatCurrency, formatDateTime } from '@/utils/format'
 import { transactionStatusClasses } from '@/utils/statusStyles'
 import AppIcon from '@/components/common/AppIcon.vue'
+import type { Transaction } from '@/types'
 
-defineProps({
-  open: { type: Boolean, default: false },
-  transaction: { type: Object, default: null },
-  accountName: { type: String, default: '' },
-  status: { type: String, default: 'idle' }
-})
+withDefaults(
+  defineProps<{
+    open?: boolean
+    transaction?: Transaction | null
+    accountName?: string
+    status?: string
+  }>(),
+  {
+    open: false,
+    transaction: null,
+    accountName: '',
+    status: 'idle'
+  }
+)
 
-defineEmits(['close'])
+defineEmits<{
+  close: []
+}>()
 </script>
 
 <template>
@@ -75,7 +86,7 @@ defineEmits(['close'])
           </div>
           <div v-if="transaction.status === 'posted'" class="flex items-center justify-between">
             <dt class="text-dim">Balance After</dt>
-            <dd class="ledger-num m-0 font-medium text-ink">{{ formatCurrency(transaction.balanceAfter) }}</dd>
+            <dd class="ledger-num m-0 font-medium text-ink">{{ formatCurrency(transaction.balanceAfter ?? 0) }}</dd>
           </div>
           <div class="flex items-center justify-between">
             <dt class="text-dim">Transaction ID</dt>

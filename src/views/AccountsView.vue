@@ -1,11 +1,9 @@
-<script setup>
+<script setup lang="ts">
 import { computed, onMounted, ref } from 'vue'
 import { useRouter } from 'vue-router'
 import { useAccountsStore } from '@/stores/accounts'
 import { transactionService } from '@/services/transactionService'
-import { formatCurrency } from '@/utils/format'
 import AccountCard from '@/components/accounts/AccountCard.vue'
-import AppIcon from '@/components/common/AppIcon.vue'
 
 const accountsStore = useAccountsStore()
 const router = useRouter()
@@ -26,7 +24,7 @@ onMounted(async () => {
   pendingCount.value = pending.length
 })
 
-function goToTransactions(accountId) {
+function goToTransactions(accountId: string) {
   router.push({ name: 'transactions', query: { accountId } })
 }
 </script>

@@ -1,9 +1,10 @@
-<script setup>
+<script setup lang="ts">
 import { formatCurrency, formatDateTime } from '@/utils/format'
+import type { TransferResult } from '@/types'
 
-defineProps({
-  result: { type: Object, required: true }
-})
+defineProps<{
+  result: TransferResult
+}>()
 </script>
 
 <template>

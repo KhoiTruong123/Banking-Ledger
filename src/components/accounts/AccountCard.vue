@@ -1,13 +1,16 @@
-<script setup>
+<script setup lang="ts">
 import { computed } from 'vue'
 import { formatCurrency, maskAccountNumber } from '@/utils/format'
 import AppIcon from '@/components/common/AppIcon.vue'
+import type { Account } from '@/types'
 
-const props = defineProps({
-  account: { type: Object, required: true }
-})
+const props = defineProps<{
+  account: Account
+}>()
 
-const emit = defineEmits(['view-transactions'])
+const emit = defineEmits<{
+  'view-transactions': [accountId: string]
+}>()
 
 const typeLabel = computed(() => {
   return props.account.type === 'checking' ? 'Checking' : 'Savings'

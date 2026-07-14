@@ -1,9 +1,9 @@
-<script setup>
+<script setup lang="ts">
 import { ICONS } from '@/utils/icons'
 
-defineProps({
-  name: { type: String, required: true }
-})
+defineProps<{
+  name: string
+}>()
 </script>
 
 <template>

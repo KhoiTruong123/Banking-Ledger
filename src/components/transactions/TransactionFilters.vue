@@ -1,15 +1,24 @@
-<script setup>
+<script setup lang="ts">
 import { CATEGORIES } from '@/utils/constants'
 import AppIcon from '@/components/common/AppIcon.vue'
+import type { Account, TransactionFilters } from '@/types'
 
-const props = defineProps({
-  filters: { type: Object, required: true },
-  accounts: { type: Array, default: () => [] }
-})
+const props = withDefaults(
+  defineProps<{
+    filters: TransactionFilters
+    accounts?: Account[]
+  }>(),
+  {
+    accounts: () => []
+  }
+)
 
-const emit = defineEmits(['update:filters', 'reset'])
+const emit = defineEmits<{
+  'update:filters': [filters: TransactionFilters]
+  reset: []
+}>()
 
-function update(field, value) {
+function update(field: keyof TransactionFilters, value: string) {
   emit('update:filters', { ...props.filters, [field]: value })
 }
 </script>
@@ -25,7 +34,7 @@ function update(field, value) {
           type="search"
           placeholder="Apple, Starbucks, Rent…"
           :value="filters.search"
-          @input="update('search', $event.target.value)"
+          @input="update('search', ($event.target as HTMLInputElement).value)"
         />
       </span>
     </label>
@@ -36,7 +45,7 @@ function update(field, value) {
         <select
           class="input w-full appearance-none py-2.5 pr-9 text-sm"
           :value="filters.accountId"
-          @change="update('accountId', $event.target.value)"
+          @change="update('accountId', ($event.target as HTMLSelectElement).value)"
         >
           <option value="">All Accounts</option>
           <option v-for="account in accounts" :key="account.id" :value="account.id">{{ account.nickname }}</option>
@@ -51,7 +60,7 @@ function update(field, value) {
         <select
           class="input w-full appearance-none py-2.5 pr-9 text-sm"
           :value="filters.category"
-          @change="update('category', $event.target.value)"
+          @change="update('category', ($event.target as HTMLSelectElement).value)"
         >
           <option value="">All Categories</option>
           <option v-for="category in CATEGORIES" :key="category" :value="category">{{ category }}</option>
@@ -66,7 +75,7 @@ function update(field, value) {
         <select
           class="input w-full appearance-none py-2.5 pr-9 text-sm"
           :value="filters.status"
-          @change="update('status', $event.target.value)"
+          @change="update('status', ($event.target as HTMLSelectElement).value)"
         >
           <option value="">All Status</option>
           <option value="posted">Posted</option>
@@ -83,7 +92,7 @@ function update(field, value) {
         type="date"
         :value="filters.dateFrom"
         :max="filters.dateTo || undefined"
-        @change="update('dateFrom', $event.target.value)"
+        @change="update('dateFrom', ($event.target as HTMLInputElement).value)"
       />
     </label>
 
@@ -94,7 +103,7 @@ function update(field, value) {
         type="date"
         :value="filters.dateTo"
         :min="filters.dateFrom || undefined"
-        @change="update('dateTo', $event.target.value)"
+        @change="update('dateTo', ($event.target as HTMLInputElement).value)"
       />
     </label>
 

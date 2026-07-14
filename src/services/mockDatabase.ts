@@ -1,16 +1,18 @@
 import { generateSeedData } from '@/data/seedData'
+import type { SeedData } from '@/data/seedData'
+import type { Account, Transaction } from '@/types'
 
 const STORAGE_KEY = 'ledger-mock-db-v1'
 
-let state = null
+let state: SeedData | null = null
 
-function load() {
+function load(): SeedData {
   if (state) return state
 
   try {
     const raw = localStorage.getItem(STORAGE_KEY)
     if (raw) {
-      state = JSON.parse(raw)
+      state = JSON.parse(raw) as SeedData
       return state
     }
   } catch (err) {
@@ -22,12 +24,19 @@ function load() {
   return state
 }
 
-function persist() {
+function persist(): void {
   try {
     localStorage.setItem(STORAGE_KEY, JSON.stringify(state))
   } catch (err) {
     console.warn('Could not persist mock database to localStorage.', err)
   }
+}
+
+interface CommitTransferInput {
+  fromAccount: Account
+  toAccount: Account
+  debitTransaction: Transaction
+  creditTransaction: Transaction
 }
 
 export const mockDatabase = {
@@ -37,7 +46,7 @@ export const mockDatabase = {
   getAccounts() {
     return load().accounts
   },
-  getAccountById(accountId) {
+  getAccountById(accountId: string): Account | null {
     return load().accounts.find((a) => a.id === accountId) ?? null
   },
   getTransactions() {
@@ -49,7 +58,7 @@ export const mockDatabase = {
    * nothing is (the caller is expected to have already validated the
    * request — see transferService for the actual business rules).
    */
-  commitTransfer({ fromAccount, toAccount, debitTransaction, creditTransaction }) {
+  commitTransfer({ fromAccount, toAccount, debitTransaction, creditTransaction }: CommitTransferInput): void {
     const db = load()
     const fromIndex = db.accounts.findIndex((a) => a.id === fromAccount.id)
     const toIndex = db.accounts.findIndex((a) => a.id === toAccount.id)
@@ -62,7 +71,7 @@ export const mockDatabase = {
     db.transactions.unshift(creditTransaction, debitTransaction)
     persist()
   },
-  reset() {
+  reset(): SeedData {
     state = generateSeedData()
     persist()
     return state

@@ -141,7 +141,7 @@ const CATEGORY_TINTS = ['bg-primary', 'bg-teal', 'bg-ink-soft', 'bg-steel']
               <span class="inline-flex items-center gap-1.5"><i class="inline-block h-2.5 w-2.5 rounded-sm bg-brick"></i>Exp</span>
             </div>
           </div>
-          <div class="flex h-full items-end gap-3">
+          <div class="flex h-40 items-end gap-3">
             <div v-for="month in monthly" :key="month.month" class="flex h-full flex-1 flex-col">
               <div class="flex flex-1 items-end justify-center gap-1">
                 <div
